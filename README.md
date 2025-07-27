@@ -57,7 +57,8 @@ VocalSense is a web-based application that predicts human emotions in real-time 
 
 ## Author
 
-https://github.com/PYB05
+https://github.com/PYB05, 
+https://github.com/RyanFlame27
 
 ## Future Improvements
 
