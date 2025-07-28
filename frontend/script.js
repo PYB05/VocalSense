@@ -12,22 +12,13 @@ navItems.forEach(item => {
   item.addEventListener('click', (e) => {
     e.preventDefault();
     const pageId = item.getAttribute('data-page');
-    
-    // Hide all pages
-    pages.forEach(page => {
-      page.classList.remove('active');
-    });
-    
-    // Show selected page
+
+    pages.forEach(page => page.classList.remove('active'));
     document.getElementById(`${pageId}-page`).classList.add('active');
-    
-    // Update active nav item
-    navItems.forEach(navItem => {
-      navItem.classList.remove('active');
-    });
+
+    navItems.forEach(navItem => navItem.classList.remove('active'));
     item.classList.add('active');
-    
-    // Close mobile menu if open
+
     navLinks.classList.remove('active');
   });
 });
@@ -47,17 +38,15 @@ fileInput.addEventListener('change', (e) => {
   }
 });
 
-// Add event listener to the predict button
 predictButton.addEventListener('click', uploadAndPredict);
 
 async function uploadAndPredict() {
   const file = fileInput.files[0];
   if (!file) return;
-  
+
   predictButton.disabled = true;
   predictButton.textContent = 'Analyzing...';
-  
-  // Show loading animation
+
   const resultContainer = document.querySelector('.result-container');
   resultContainer.innerHTML = `
     <div class="loading-wave">
@@ -72,24 +61,24 @@ async function uploadAndPredict() {
   const formData = new FormData();
   formData.append("file", file);
 
-  // Record start time for minimum delay
   const startTime = Date.now();
-  const minimumDelay = 2000; // 2 seconds minimum delay
+  const minimumDelay = 2000;
 
   try {
     const response = await fetch("https://vocalsense-backend.onrender.com/predict", {
-
       method: "POST",
-      body: formData
+      body: formData,
+      headers: {
+        "Accept": "application/json"
+      }
     });
 
-    // Calculate remaining time to fulfill minimum delay
     const elapsedTime = Date.now() - startTime;
     const remainingDelay = Math.max(0, minimumDelay - elapsedTime);
+    if (remainingDelay > 0) await new Promise(resolve => setTimeout(resolve, remainingDelay));
 
-    // Wait for remaining delay time if needed
-    if (remainingDelay > 0) {
-      await new Promise(resolve => setTimeout(resolve, remainingDelay));
+    if (!response.ok) {
+      throw new Error(`Server responded with status ${response.status}`);
     }
 
     const result = await response.json();
@@ -106,11 +95,12 @@ async function uploadAndPredict() {
         </h2>
       `;
     }
+
   } catch (error) {
-    console.error(error);
+    console.error("Prediction error:", error);
     resultContainer.innerHTML = `
       <h2 id="result" class="result-animation">
-        Network error: Please try again
+        Network error: ${error.message}
       </h2>
     `;
   } finally {
@@ -123,7 +113,6 @@ async function uploadAndPredict() {
 const darkModeToggle = document.getElementById('darkModeToggle');
 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-// Check for saved theme preference or use system preference
 if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDarkScheme.matches)) {
   document.documentElement.setAttribute('data-theme', 'dark');
   darkModeToggle.checked = true;
@@ -143,16 +132,13 @@ darkModeToggle.addEventListener('change', () => {
 const audioQualitySelect = document.getElementById('audioQuality');
 const languageSelect = document.getElementById('languageSelect');
 
-// Load saved settings
 if (localStorage.getItem('audioQuality')) {
   audioQualitySelect.value = localStorage.getItem('audioQuality');
 }
-
 if (localStorage.getItem('language')) {
   languageSelect.value = localStorage.getItem('language');
 }
 
-// Save settings when changed
 audioQualitySelect.addEventListener('change', () => {
   localStorage.setItem('audioQuality', audioQualitySelect.value);
 });
