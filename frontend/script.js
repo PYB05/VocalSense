@@ -77,7 +77,8 @@ async function uploadAndPredict() {
   const minimumDelay = 2000; // 2 seconds minimum delay
 
   try {
-    const response = await fetch("http://127.0.0.1:5000/predict", {
+    const response = await fetch("https://vocalsense-backend.onrender.com/predict", {
+
       method: "POST",
       body: formData
     });
